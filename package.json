@@ -1,0 +1,19 @@
+{
+  "name": "solo-project",
+  "version": "1.0.0",
+  "description": "A simple app!",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gxcad/soloproject.git"
+  },
+  "author": "Ken Sakuma",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gxcad/soloproject/issues"
+  },
+  "homepage": "https://github.com/gxcad/soloproject#readme"
+}
