@@ -4,7 +4,9 @@
   "description": "A simple app!",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "NODE_ENV=production webpack",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "NODE_ENV=development nodemon server/server.js & webpack-dev-server --open"
   },
   "repository": {
     "type": "git",
@@ -15,5 +17,24 @@
   "bugs": {
     "url": "https://github.com/gxcad/soloproject/issues"
   },
-  "homepage": "https://github.com/gxcad/soloproject#readme"
+  "homepage": "https://github.com/gxcad/soloproject#readme",
+  "devDependencies": {
+    "@babel/core": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.6",
+    "css-loader": "^3.2.0",
+    "nodemon": "^1.19.2",
+    "path": "^0.12.7",
+    "style-loader": "^1.0.0",
+    "webpack": "^4.40.2",
+    "webpack-cli": "^3.3.9",
+    "webpack-dev-server": "^3.8.1"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "html-webpack-plugin": "^3.2.0",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0"
+  }
 }
