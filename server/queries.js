@@ -19,7 +19,7 @@ const getFoods = (req, res) => {
 const getFoodById = (req, res) => {
   const id = parseInt(req.params.id);
 
-  pool.query('SELECT * FROM foods WHERE id = $1', [id], (err, results) => {
+  pool.query('SELECT * FROM foods WHERE id = $1 RETURNING *', [id], (err, results) => {
     if (err) {
       throw err;
     }
@@ -31,11 +31,12 @@ const createFood = (req, res) => {
   const id = parseInt(req.params.id);
   const {food, expiration} = req.body;
 
-  pool.query('INSERT INTO foods (food, expiration) VALUES ($1, $2)', [food, expiration], (err, results) => {
+  pool.query('INSERT INTO foods (food, expiration) VALUES ($1, $2) RETURNING *', [food, expiration], (err, results) => {
     if (err) {
       throw err;
     }
-    res.status(201).send(`Food added with ID: $(id)`);
+    res.locals.results = results.rows;
+    res.status(201).send(res.locals.results);
   })
 };
 
@@ -62,6 +63,7 @@ const deleteFood = (req, res) => {
     if (err) {
       throw err;
     }
+    console.log('results in queries', results);
     res.status(200).send(`Food deleted with ID: ${id}`)
   })
 };

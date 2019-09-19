@@ -10,9 +10,10 @@ module.exports = {
   },
   devServer:{
     publicPath: '/build',
-    proxy: {
-      '/food': 'http://localhost:3000'
-    },
+    proxy: [{
+      context: ['/food'],
+      target: 'http://localhost:3000'
+    }],
   },
   module: {
     rules: [

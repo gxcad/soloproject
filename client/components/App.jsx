@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 
 class App extends Component {
   constructor(props) {
@@ -6,58 +6,95 @@ class App extends Component {
     this.state = {
       people: [],
       foodItem: '',
+      foodIdToRemove: '',
+      expiration: '2019-09-30',
       foodItems: []
     };
-    this.updateState = this.updateState.bind(this);
+    this.updateFood = this.updateFood.bind(this);
     this.submitInfo = this.submitInfo.bind(this);
+    this.submitRemove = this.submitRemove.bind(this);
+    this.foodToRemove = this.foodToRemove.bind(this);
   }
 
-  updateState(foodItem) {
-    console.log('foodItem', foodItem);
+  updateFood(foodItem) {
     this.setState({
       foodItem: foodItem
     })
-    console.log('foodItem in state', this.state.foodItem);
   }
+
+  updateExpiration(expiration) {
+    this.setState({
+      expiration: expiration
+    })
+  }
+
+  foodToRemove(Id) {
+    this.setState({
+      foodIdToRemove: Id
+    })
+  }
+
+  submitRemove(id) {
+    // console.log('state id', this.state.foodIdToRemove);
+    return fetch('/food/' + this.state.foodIdToRemove, {
+      method: 'DELETE',
+      headers: {'Content-Type': 'application/json',},
+  })
+  .then((res) => res.json())
+  .then((result) => {
+    this.setState({foodItems: [...this.state.foodItems, result]});
+  }) 
+}
 
   submitInfo() {
-    const currentFoodItems = [...this.state.foodItems, this.state.foodItem];
-    this.setState({foodItems: currentFoodItems});
-  }
+    const newFoodItemObj = {food: this.state.foodItem, expiration: this.state.expiration}
+    return fetch('/food', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {'Content-Type': 'application/json',},
+      body: JSON.stringify(newFoodItemObj),
+  })
+  .then((response) => response.json())
+  .then((result) => {
+    this.setState({foodItems: [...this.state.foodItems, result]});
+  }) 
+}
 
   componentDidMount() {
-    console.log('after componentDidMount', this.state.foodItems);
     fetch('/food') 
     .then((foodData) => {
-      return foodData.json()
+      return foodData.json();
     })
-      .then((resultFoodData) => {
-        this.setState({foodItem: resultFoodData})
-      })
-    }
+    .then((resultFoodData) => {
+      this.setState({foodItems: resultFoodData});
+    })
+  }
 
   render() {
-    const foodItems = [];
-    for (let i = 0; i < this.state.people.length; i += 1) {
-      foodItems.push(`${this.state.foodItems[i]} is expiring 3 days from ${Date()}`);
-    }
-    console.log('foodItems in render', foodItems);
+    // const foodItems = [];
+    // console.log('begin of render', this.state.foodItems);
+    // for (let i = 0; i < this.state.foodItems.length; i += 1) {
+    //   foodItems.push(`${this.state.foodItems} is expiring 3 days from ${Date()}`);
+    // }
+    const myFoodItems = this.state.foodItems.map((e, i) => {
+      return (
+          <FoodItem key={i} id={i} foodId={e.id} foodItem={e.food} expiration={e.expiration} />
+      )
+    });
+    // console.log('foodItems in render', foodItems);
 
     return (
       <div>
-        <input className='inputField' onChange={(e) => this.updateState(e.target.value)} placeholder='enter food item'></input>
-        <input className='inputField' value={this.state.expiration} onChange={(e) => this.updateState(e.target.value)} placeholder='enter days until expiration'></input>
+        <input className='inputField' onChange={(e) => this.updateFood(e.target.value)} placeholder='enter food item'></input>
+        <input className='inputField' onChange={(e) => this.updateExpiration(e.target.value)} placeholder='enter expiration date'></input>
         <button form='foodItem' type='submit' onClick={this.submitInfo} className='submit'>Submit</button>
+        <input className='inputField' onChange={(e) => this.foodToRemove(e.target.value)} placeholder='enter id to remove'></input>
+        <button type='submit' onClick={(id) => this.submitRemove(id)} className='submit'>Remove</button>
         <h1>Food inventory:</h1>
         <ul>
-          {this.state.foodItems.length > 0 ? (
-            <>
-              {foodItems.map((person, i) => {
-                return<FoodItem key={i} message={person} foodItem={this.state.foodItems[i]}/>
-                
-              })}
-            </>
-          ): null}
+          <Fragment>
+            {myFoodItems}
+          </Fragment>
         </ul>
       </div>
     )
@@ -65,10 +102,10 @@ class App extends Component {
 }
 
 function FoodItem(props) {
-  console.log('food item props', props)
   return (
     <div className='foodItem'>
-      <li>{props.message}</li>
+      <li>{props.foodItem}</li>
+      <li>{props.expiration}</li>
     </div>
   )
 }
