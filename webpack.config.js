@@ -11,7 +11,7 @@ module.exports = {
   devServer:{
     publicPath: '/build',
     proxy: {
-      '/coolRoute': 'http://localhost:3000'
+      '/food': 'http://localhost:3000'
     },
   },
   module: {

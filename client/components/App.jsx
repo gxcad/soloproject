@@ -6,14 +6,14 @@ class App extends Component {
     this.state = {
       people: [],
       foodItem: '',
-      foodItems: ['Pan seared T-Rex']
+      foodItems: []
     };
     this.updateState = this.updateState.bind(this);
     this.submitInfo = this.submitInfo.bind(this);
   }
 
   updateState(foodItem) {
-    // console.log('foodItem', foodItem);
+    console.log('foodItem', foodItem);
     this.setState({
       foodItem: foodItem
     })
@@ -21,30 +21,20 @@ class App extends Component {
   }
 
   submitInfo() {
-    // console.log('foodItem', this.state.foodItem)
     const currentFoodItems = [...this.state.foodItems, this.state.foodItem];
-    // console.log('current state of fooditems', currentFoodItems);
     this.setState({foodItems: currentFoodItems});
-    // console.log('fooditems after update', this.state.foodItems);
   }
 
   componentDidMount() {
     console.log('after componentDidMount', this.state.foodItems);
-    fetch('/coolRoute', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(this.state.foodItems)
-  })
-      .then((foodData) => {
-        // console.log('before json parse', sampleData);
-        return foodData.json()})
-        .then((resultFoodData) => {
-          // console.log('result in CDM', resultFoodData);
-          this.setState({foodItem: resultFoodData})
-        })
-  }
+    fetch('/food') 
+    .then((foodData) => {
+      return foodData.json()
+    })
+      .then((resultFoodData) => {
+        this.setState({foodItem: resultFoodData})
+      })
+    }
 
   render() {
     const foodItems = [];
@@ -58,11 +48,10 @@ class App extends Component {
         <input className='inputField' onChange={(e) => this.updateState(e.target.value)} placeholder='enter food item'></input>
         <input className='inputField' value={this.state.expiration} onChange={(e) => this.updateState(e.target.value)} placeholder='enter days until expiration'></input>
         <button form='foodItem' type='submit' onClick={this.submitInfo} className='submit'>Submit</button>
-        <h1>Perishables:</h1>
+        <h1>Food inventory:</h1>
         <ul>
           {this.state.foodItems.length > 0 ? (
             <>
-              {/* {foodItems} */}
               {foodItems.map((person, i) => {
                 return<FoodItem key={i} message={person} foodItem={this.state.foodItems[i]}/>
                 
