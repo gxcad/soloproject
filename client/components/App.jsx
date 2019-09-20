@@ -6,13 +6,14 @@ class App extends Component {
     this.state = {
       people: [],
       foodItem: '',
-      foodIdToRemove: '',
+      foodId: '',
       expiration: '2019-09-30',
       foodItems: []
     };
     this.updateFood = this.updateFood.bind(this);
     this.submitInfo = this.submitInfo.bind(this);
     this.submitRemove = this.submitRemove.bind(this);
+    this.submitUpdate = this.submitUpdate.bind(this);
     this.foodToRemove = this.foodToRemove.bind(this);
   }
 
@@ -30,13 +31,26 @@ class App extends Component {
 
   foodToRemove(Id) {
     this.setState({
-      foodIdToRemove: Id
+      foodId: Id
     })
   }
 
-  submitRemove(id) {
-    // console.log('state id', this.state.foodIdToRemove);
-    return fetch('/food/' + this.state.foodIdToRemove, {
+  submitUpdate() {
+    const newFoodItemObj = {food: this.state.foodItem, expiration: this.state.expiration};
+    return fetch('/food', + this.state.foodId, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json',},
+      body: JSON.stringify(newFoodItemObj),
+  })
+  .then((response) => response.json())
+  .then((result) => {
+    this.setState({foodItems: [...this.state.foodItems, result]});
+  }) 
+}
+
+  submitRemove() {
+    // console.log('state id', this.state.foodId);
+    return fetch('/food/' + this.state.foodId, {
       method: 'DELETE',
       headers: {'Content-Type': 'application/json',},
   })
@@ -56,6 +70,7 @@ class App extends Component {
   })
   .then((response) => response.json())
   .then((result) => {
+    // console.log(result);
     this.setState({foodItems: [...this.state.foodItems, result]});
   }) 
 }
@@ -87,7 +102,8 @@ class App extends Component {
       <div>
         <input className='inputField' onChange={(e) => this.updateFood(e.target.value)} placeholder='enter food item'></input>
         <input className='inputField' onChange={(e) => this.updateExpiration(e.target.value)} placeholder='enter expiration date'></input>
-        <button form='foodItem' type='submit' onClick={this.submitInfo} className='submit'>Submit</button>
+        <button type='submit' onClick={this.submitInfo} className='submit'>Submit</button>
+        <button type='submit' onClick={(id) => this.submitUpdate(id)} className='submit'>Update</button>
         <input className='inputField' onChange={(e) => this.foodToRemove(e.target.value)} placeholder='enter id to remove'></input>
         <button type='submit' onClick={(id) => this.submitRemove(id)} className='submit'>Remove</button>
         <h1>Food inventory:</h1>
